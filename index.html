@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="admin/css/bootstrap.css">
+    <link rel="stylesheet" href="admin/css/font-awesome.css">
+    <link rel="stylesheet" href="admin/css/background.css">
+</head>
+<style>
+    small {
+        color: red;
+        cursor: pointer;
+    }
+
+    small:hover {
+        color: white;
+    }
+
+    #login>* {
+        margin-top: 5px;
+        outline: 0;
+    }
+
+    #login>*:focus {
+        outline: 0 !important;
+        border: 1px solid red im !important;
+        box-shadow: 0 0 3px red !important;
+    }
+
+    small,
+    h1 {
+        color: darkred;
+    }
+</style>
+
+<body class="bck">
+    <div class="container-fluid">
+        <div class="row" style="height: 100vh;">
+            <div class="col-md-5 form-group m-auto p-5" id="login" style="border-radius: 5px;
+            position: relative; background-color: rgba(128,128,128,0.5);">
+                <h1 style="font-size: 30px; font-weight: 900;">Login Information</h1>
+                <input type="text" id="user" class="form-control form-control-lg" placeholder="User Name Here...">
+                <input type="password" id="pass" class="form-control form-control-lg" placeholder="Password Here...">
+                <button id="login_btn" class="form-control bg-secondary text-white">Login</button>
+                <small class="pr-5" style="right: 0; position: absolute;">Forgot Your password, Click
+                    Here</small>
+
+            </div>
+
+        </div>
+    </div>
+</body>
+<script src="js/jquery.js"></script>
+<script>
+    $(() => {
+        $("#login_btn").click(() => {
+            var user = $("#user").val();
+            var pass = $("#pass").val();
+            if ( (user.length == 0) || (pass.length == 0)) {
+                alert("Some necessary information is missing");
+                return;
+            }
+            $.ajax({
+                url: "php/verify_user.php",
+                data: { user: user, pass: pass },
+                type: "post",
+                success: function(data){
+                    
+                    if (data == 1) {
+                        alert("User Name and Password are valid");
+                    }
+                    else {
+                        alert("Sorry you  are not valid member");
+                    }
+                },
+                error: (n, m, e) => {
+                    alert(n.responseText);
+                }
+            })
+        })
+    })
+</script>
+
+</html>

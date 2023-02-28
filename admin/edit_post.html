@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add/Edit post</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/background.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: white;
+
+        }
+
+        .parent {
+            display: flex;
+            height: 100vh;
+        }
+
+        .child1 {
+            flex-basis: 50%;
+            background-color: rgb(120, 0, 0, 0.8);
+        }
+
+        .child2 {
+            flex-basis: 50%;
+            background-color: blue;
+        }
+    </style>
+</head>
+
+<body class="bck">
+    <div class="parent">
+        <div class="child1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="admin-heading text-center"> Add New Post </h1>
+                        <div class="col-md-offset-3 col-md-9">
+                            <form action="" id="form_edit" method="POST">
+                                <div class="form-group">
+                                    <label for="post_title">Title</label>
+                                    <input type="text" id="post_title" name="post_title" class="form-control"
+                                        autocomplete="off" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Description</label>
+                                    <textarea name="postdesc" id="postdesc" rows="5" class="form-control"
+                                        required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Categorey</label>
+                                    <select name="category" id="category" class="form-control">
+
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Post Image</label>
+                                    <input type="file" name="fileload" id="fileload" required>
+                                </div>
+                                <div class="form-group">
+                                    <button type="edit" id="edit" name="edit"
+                                        class="btn btn-outline-primary">Edit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="child2">
+            <h1 class="text-center">Selected Image</h1>
+            <img src="" width="100%" alt="" id="post_img">
+        </div>
+    </div>
+    <script src="js/jquery.js"></script>
+    <script>
+        var postid = localStorage.getItem("postid");
+        getcat();
+        $(document).ready(function () {
+
+            get_rec();
+			function get_rec() {
+
+				$.ajax({
+					url: "php/get_post.php",
+					type: "POST",
+					dataType:"JSON",
+					data: { postid: postid },
+					success: function (d) {
+
+						if (!d == "0") {
+							$("#post_title").val(d.title);
+							$("#postdesc").val(d.description);
+							$("#category").val(d.category);
+							$("#fileload").val(d.fileload);
+							
+
+						}
+						else {
+							alert("Error Occured");
+						}
+					},
+					error: function (n, m, e) {
+						alert(n.responseText);
+					}
+
+				})
+
+
+			}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            $("#edit").click(function (e) {
+                e.preventDefault();
+                if ($("#fileload")[0].files.length == 0) {
+                    if (confirm("No image is selected \n Continues without Image")) {
+                        return;
+                    }
+                    else {
+                        $("#post_img").attr("src", "Post_images/no-image.jpg");
+                    }
+                }
+                var title = $("#title").val();
+                var postdesc = $("#postdesc").val();
+                if (title == "" || postdesc == "") {
+                    return;
+                }
+                var frmdata = new FormData(form_edit);
+                $.ajax({
+                    url: "php/update_post.php",
+                    data: frmdata,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: function (result) {
+                        if (result == 1) {
+                            window.location.href = "post.html";
+
+                        }
+                        else {
+                            alert(result);
+                        }
+                    }
+                })
+            })
+
+
+
+            $("#fileload").change(function (event) {
+                var files = $(this)[0].files[0];
+                var filenme = files.name;
+                var filesize = files.size;
+                var filetype = openFile(filenme);
+                if (filetype == true) {
+                    var filekb = parseInt(filesize / 1024);
+                    var sizelimit = 3000;
+                    if (filekb > sizelimit) {
+                        alert("Size " + filekb + "is over than the limit " + sizelimit);
+                        return;
+                    }
+                    var tmppath = URL.createObjectURL(event.target.files[0]);
+                    $("#post_img").fadeIn("fast").attr('src', URL.createObjectURL(event.target.files[0]))
+                }
+                else {
+                    alert("File type is not valid");
+                    return;
+                }
+            })
+
+
+
+        })
+
+        function getcat() {
+            $.ajax({
+                url: "php/get_category_option.php",
+                type: "POST",
+                success: function (d) {
+                    if (d != 0) {
+                        $("#category").html(d);
+
+                    }
+
+                }
+
+            })
+        }
+        function getExtension(filename) {
+            return filename.split('.').pop().toLowerCase();
+        }
+        function openFile(files) {
+            switch (getExtension(files)) {
+                case 'jpg': case 'jpeg': case 'png':
+                    return true;
+                    break;
+                default:
+                    return false;
+                    break;
+            }
+        }
+
+    </script>
+</body>
+
+</html>

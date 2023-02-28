@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Users List</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="css/background.css">
+</head>
+<style>
+    table a {
+        text-decoration: none;
+        color: red;
+        cursor: pointer;
+        border: 1px solid #000;
+        padding: 5px 10px;
+        background-color: rgba(0, 0, 128, 0.5);
+        border-radius: 3px;
+    }
+
+    table a:hover {
+        background-color: rgba(0, 0, 128, 0.8);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .header {
+        margin: 10px 0 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header a {
+        padding: 5px 10px;
+        color: white;
+    }
+
+    .header a:hover {
+        padding: 5px 10px;
+        color: greenyellow;
+    }
+
+    h1 {
+        color: white;
+        /* font-size: 26px;
+        color: goldenrod; */
+    }
+
+    caption {
+        color: lightgreen;
+    }
+
+    td a {
+        display: block;
+    }
+
+    td:last_child {
+        text-align: center;
+    }
+
+    th:last-child {
+        text-align: center;
+    }
+
+    span {
+        color: tomato;
+        font-size: 12px;
+    }
+
+    .myttltr {
+        margin: 0 20px 0 0;
+    }
+</style>
+
+<body class="bck">
+    <div class="container-fluid" id="main">
+        <div class="row" style="height: 100vh;">
+            <div class="col m-auto table-responsive-md" id="child"
+                style="max-height: 450px; overflow: auto; background-color: rgba(128, 128, 128,0.5);">
+                <div class="header">
+                    <h1>Avalilable Users</h1>
+                    <a href="" id="add_user"><i class="fa fa-plus fa-2x"></i></a>
+                </div>
+                <table class="table mt-2" id="tbl_tests">
+                    <thead class="bg-info text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>User ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>UserName</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-white"></tbody>
+                </table>
+                <div style="display: flex;justify-content: space-between;">
+                    <button class="btn btn-danger m-2" id="print"><i class="fa fa-print"></i></button>
+                    <span class="myttltr"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="print"></div>
+</body>
+<script src="js/jquery.js"></script>
+<script>
+    popTbl();
+    $("#add_user").click(function (e) {
+        e.preventDefault();
+        window.location.href = "add_user.html";
+    })
+    $(document).on("click", "#edit_user", function (e) {
+        e.preventDefault();
+        var userid = $(this).closest("tr").find("td:eq(1)").text();
+        localStorage.setItem("userid", userid);
+        window.location.href = "edit_user.html";
+    })
+
+    $("#print").click(function () {
+        $("#tbl_tests th:nth-child(8)").hide();
+        $("#tbl_tests td:nth-child(8)").hide();
+        $("#main").fadeOut();
+        $("body").removeClass("bck");
+        $("#child").clone().appendTo(".print");
+        $("#add_user").hide();
+        $("#print").hide();
+
+        window.print();
+
+
+        $(".print").empty();
+        $("#tbl_tests th:nth-child(8)").show();
+        $("#tbl_tests td:nth-child(8)").show();
+        $("#main").fadeIn();
+        $("body").addClass("bck");
+
+        $("#add_user").show();
+        $("#print").show();
+
+    })
+    function popTbl() {
+        $.post(
+            "php/get_user_list.php",
+            function (result) {
+                if (!result == 0) {
+                    $("#tbl_tests tbody").html(result);
+                    $(".myttltr").html("Total rows " + $("#tbl_tests tbody tr").length);
+                }
+                else {
+                    alert("No row to display")
+                }
+            }
+        )
+    }
+</script>
+
+</html>

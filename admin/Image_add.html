@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add image</title>
+</head>
+
+<body>
+    <div class="main">
+        <form action="" id="submit_form">
+            <div class="form-group">
+            <Label>Choose File</Label>
+            <input type="file" id="upload_file" name="file" accept=".jpg,.jpeg,.png">
+            <span>.jpeg,.png ,jpg  are acceptable</span>
+        </div>
+        <input type="submit" name="upload_button" id="upload_btn" value="Upload">
+        </form>
+        <hr>
+        <div id="prev">
+            <h1>Image Preview</h1>
+            <img src="" id="image_prev" alt="">
+        </div>
+    </div>
+    <script src="js/jquery.js"></script>
+    <script >
+        jQuery(document).ready(function(e){
+            $("#submit_form").submit(function(e){
+                e.preventDefault();
+                var formdata=new Formdata(this);
+                $.ajax({
+                    url:"upload.php",
+                    data:formdata,
+                    contentType:false,
+                    processData:false,
+                    success:function(d){
+                        $("#prev").show();
+                        $("#image_prev").html(d);
+                        $("#upload_file").val('');
+                    },
+                    error:function(n,m,e){
+                        alert(n.responseText);
+                    }
+                    
+                })
+            })
+
+        })
+
+    </script>
+</body>
+</html>
